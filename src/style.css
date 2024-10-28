@@ -30,7 +30,7 @@
 
  
 html { 
-  font-family: 'zero4b';
+  font-family: 'roboto';
   position: relative; 
   min-height: 100%; 
   scrollbar-color: rgb(255,110,0), black;  
@@ -38,7 +38,7 @@ html {
   background: #131313;
 
   color:#FFEEBB;
-  font-size:24px;
+  font-size:28px;
 } 
    
 
@@ -86,3 +86,74 @@ html {
     border-radius: 20px;       /* roundness of the scroll thumb */
     border: 3px solid black;  /* creates padding around scroll thumb */
   }
+
+  h3,h4,h5 { 
+    text-align: center;
+    font-family: zero4B; 
+  }
+
+  h4 {
+    font-size: 32px;
+  }
+
+  h5 {
+    font-size: 24px;
+  }
+
+  select { 
+    width: 90%;
+  }
+
+  p {
+    font-family: roboto;
+    font-size:18px;
+  }
+
+  .file-upload {
+    font-size:16px;
+    font-family: 'roboto';
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 5px; 
+    color:black;
+    background:silver;
+    pointer-events: all;
+  }
+
+  .file-upload:hover{
+    background:darkgray;
+  }
+
+  .file-upload:active{
+    background: gray;
+  }
+  
+  .file-upload input {
+    overflow: hidden;
+    width: 0;
+  }
+
+  
+  button {
+    font-size: 16px; 
+    font-family: 'roboto';
+  }
+ 
+
+  .category-button:hover {
+    color:orange;
+    cursor:pointer;
+  }
+
+  .category-button.selected {
+    color:orange; 
+    text-decoration: underline; 
+  }
+
+  .category-button.selected::before{
+    content: ">";
+  }
+  .category-button.selected::after{
+    content: "<";
+  }
+ 
