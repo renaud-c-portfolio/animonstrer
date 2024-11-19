@@ -25,6 +25,8 @@ const animMenuStyle = `
 
 export class Animonstrer { 
 
+ 
+
   projectObj = {
     monstrerVersion: "test version",
     name: "new project",
@@ -65,6 +67,9 @@ export class Animonstrer {
     uniqueAnims: [],
   }
 
+
+  poseArray:Array<PartPose> = [];  
+
   currentPartTypeIndex:number = -1;
 
   appDiv = document.getElementById("app") as HTMLDivElement;
@@ -101,8 +106,8 @@ export class Animonstrer {
 class AnimMenu {
  
 
-    projectNameHeader = document.createElement("h4");
-
+    
+    projectNameHeader = document.createElement("h4"); 
     renameProjectButton = document.createElement("button");
     saveProjectButton = document.createElement("button");
 
@@ -118,9 +123,16 @@ class AnimMenu {
     //
     categoryPartTypeDiv = document.createElement("div");
     partTypeSelect = document.createElement("select");
+
     categoryPartsListDiv = document.createElement("div");
     categoryCharaTemplateDiv = document.createElement("div");
     categoryCharasListDiv = document.createElement("div");
+
+    posesSelect = document.createElement("select");
+
+    anchorsSelect = document.createElement("select");
+
+
 
 
 
@@ -208,6 +220,18 @@ class AnimMenu {
                         this.main.canvasObj.tempImage.imageElem = newImg;
                       } 
                   }
+
+                  for (let i =0; i < newObj.partTypes.length; i++)
+                  {
+                    const loadPartName:string = newObj.partTypes[i].name;
+                    const newOption = document.createElement("option");
+                    
+                    newOption.value = String(i);
+                    newOption.innerText = loadPartName;
+                    //newOption
+                    
+                    this.partTypeSelect.appendChild(newOption);
+                  }
                   
                   
                 }
@@ -242,7 +266,7 @@ class AnimMenu {
             const link = document.createElement("a");
             link.href = url;
             link.download = "project.monstrer";
-            link.click() 
+            link.click();
           }
 
         })
@@ -311,7 +335,7 @@ class AnimMenu {
                   newImg.onload = () => {
                       this.main.canvasObj.tempImage.imageElem = newImg;
                   }
-
+                   
                 }
                 else
                 {
@@ -375,20 +399,59 @@ class AnimMenu {
          const addPartTypeButton = document.createElement("button");
          addPartTypeButton.innerText = "new part type";
          addPartTypeButton.onclick = () => {
-          createPartType(this.main.projectObj.partTypes,this.partTypeSelect);
+          createPartType(this.main.projectObj.partTypes,this.partTypeSelect); 
+             main.currentPartTypeIndex = this.main.projectObj.partTypes.length - 1;
          }
          this.categoryPartTypeDiv.appendChild(addPartTypeButton);
          const renamePartType = document.createElement("button");
-         renamePartType.innerText = "rename";
-         renamePartType.setAttribute("disabled","true");
+         renamePartType.innerText = "rename"; 
          this.categoryPartTypeDiv.appendChild(renamePartType); 
          const deletePartType = document.createElement("button");
-         deletePartType.innerText = "delete";
-         deletePartType.setAttribute("disabled","true");
+         deletePartType.innerText = "delete"; 
          this.categoryPartTypeDiv.appendChild(deletePartType);
          
+         ///category: poses
+         const posesTitle = document.createElement("h6");
+         posesTitle.innerText = "Poses";
+         this.categoryPartTypeDiv.appendChild(posesTitle);
+         this.categoryPartTypeDiv.appendChild(this.posesSelect);
+
          
-        
+         const addPoseButton = document.createElement("button");
+         addPoseButton.innerText = "new pose";
+         addPoseButton.onclick = () => {
+         // createNewPoseForPartType("name",this.main.currentPartType);
+        }
+         this.categoryPartTypeDiv.appendChild(addPoseButton);
+
+         const renamePoseButton = document.createElement("button");
+         renamePoseButton.innerText = "rename"; 
+         this.categoryPartTypeDiv.appendChild(renamePoseButton); 
+         const deletePoseButton = document.createElement("button");
+         deletePoseButton.innerText = "delete"; 
+         this.categoryPartTypeDiv.appendChild(deletePoseButton);
+         
+         
+         const anchorsTitle = document.createElement("h6");
+         anchorsTitle.innerText = "Anchors";
+         this.categoryPartTypeDiv.appendChild(anchorsTitle);
+         this.categoryPartTypeDiv.appendChild(this.anchorsSelect);
+
+         const addAnchorButton = document.createElement("button");
+         addAnchorButton.innerText = "new anchor";
+         addAnchorButton.onclick = () => {
+
+        }
+         this.categoryPartTypeDiv.appendChild(addAnchorButton);
+
+         const renameAnchorsButton = document.createElement("button");
+         renameAnchorsButton.innerText = "rename"; 
+         this.categoryPartTypeDiv.appendChild(renameAnchorsButton); 
+         const deleteAnchorsButton = document.createElement("button");
+         deleteAnchorsButton.innerText = "delete"; 
+         this.categoryPartTypeDiv.appendChild(deleteAnchorsButton);
+         
+
      }
  
 }
@@ -401,6 +464,28 @@ const addDropDownChoice = (dropdown:HTMLSelectElement,name:string,value:string) 
   newChoice.value = value;
   newChoice.innerText = name;
   dropdown.appendChild(newChoice);
+  
+}
+
+
+const createNewPoseForPartType = (currentPartType:object,poseArray:Array<object>|null,select:HTMLSelectElement) => {
+    
+  if (poseArray != null)
+  {
+     let newName = prompt("choose new pose name for ");
+
+    if (newName != null)
+    {
+      poseArray.push(
+
+        { name:newName, }
+
+      )
+      const newOption = document.createElement("option");
+      newOption.innerHTML= newName;
+      select.appendChild(newOption);
+    }
+  }
 }
 
 const createPartType = (partTypeList:Array<object>,select:HTMLSelectElement) => {
@@ -412,17 +497,171 @@ const createPartType = (partTypeList:Array<object>,select:HTMLSelectElement) => 
     
      const newChoice = document.createElement("option");
      newChoice.value = String(partTypeList.length);
-    partTypeList.push({
+     partTypeList.push({
       name:newName,
-      
+      anchors:[],
+      poses:[],
     }); 
+
     newChoice.innerText = newName;
     select.appendChild(newChoice);
+    let newPartName = prompt("Choose default part name for "+newName); 
+    
   }
     
   
 }
 
+////web element group classes
+
+export class SelectMiniMenu {
+
+  listSelect:HTMLSelectElement = document.createElement("select");
+  createNewButton:HTMLButtonElement = document.createElement("button");
+  renameButton:HTMLButtonElement = document.createElement("button");
+  deleteButton:HTMLButtonElement = document.createElement("button");
+
+  constructor(public mainArray:Array<any>,public categoryName:string){
+      this.createNewButton.innerText = "new " + categoryName; 
+
+      this.listSelect.onchange = () => {
+         
+      }
+
+      this.createNewButton.onclick = () => {
+         
+      }
+
+      this.renameButton.onclick = () => {
+         
+      }
+      
+      this.deleteButton.onclick = () => {
+         
+      }
+  }
+
+
+  addToDiv = (div:HTMLDivElement) => {
+    div.appendChild(this.listSelect); 
+    div.appendChild(this.createNewButton);
+    div.appendChild(this.renameButton);
+    div.appendChild(this.deleteButton); 
+  }
+
+}
+
+export class CategoryButton { 
+
+  clickableHeader:HTMLHeadingElement = document.createElement("h6"); 
+  categoryDiv:HTMLDivElement = document.createElement("div");
+
+  constructor(public categoryName:string){
+     this.clickableHeader.innerText = categoryName;
+     
+     this.clickableHeader.onclick = () =>{
+
+     }
+  }
+
+}
+
+///Animation Element Classes 
+export class PartType {
+
+  partTypeIconChar:string = "@";
+  partTypePoseList:Array<PartPose> = [];
+
+  partTypeAnchors:Array<string> = [];
+
+  constructor(){
+     
+  }
+}
+
+export class UniquePart { 
+
+  spriteList:Array<any> = [];
+  
+   
+  constructor(public partType:null|PartType = null)
+  {
+     
+  }
+
+}
+
+export class PartPose {
+
+  defaultHitboxes:Array<[string,number,number,number,number]> = [];
+
+  constructor(){
+     
+  }
+}
+
+export class CharaTemplate { 
+
+  partsTypeList:Array<PartType> = [];
+  defaultAnimations:Array<MonstrAnimation> = [];
+
+
+  constructor(public templateName:string){
+     
+  }
+}
+
+export class UniqueCharacter 
+{ 
+   
+   
+   
+  constructor(public charTemplate:null|CharaTemplate,public charName:string){
+     if (charTemplate != null)
+     {
+         
+     }
+  }
+}
+
+export class AnimationFrame {
+
+  isPose:boolean = false;
+
+  frameDuration:number = 1;
+
+  addedHitboxes:Array<[string,number,number,number,number]> = [];
+
+  tags:Array<string> = [];
+
+  extraParts:Array<UniquePart> = [];
+
+  offsetPart:Array<[number,number]> = [];
+  mirrorPart:Array<number> = [];
+  flipPart:Array<number> = [];
+  rotatePart:Array<number> = [];
+  displayPart:Array<number> = []; 
+  partPose:Array<number> = [];
+  
+
+  constructor() {
+
+  }
+}
+
+export class MonstrAnimation { 
+   
+  numFrames = 1;
+   
+  uniqueCharSpecific:boolean = false;
+  uniqueChar:null|UniqueCharacter = null;
+   
+  constructor(public charTemplate:CharaTemplate,public animationName:string){
+
+    
+  }
+
+}
 
 
 
