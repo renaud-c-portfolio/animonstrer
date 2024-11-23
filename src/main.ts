@@ -134,7 +134,7 @@ class AnimMenu {
 
 
 
-
+    partsTypeMenu:SelectMiniMenu;
 
 
     constructor(public main:Animonstrer)
@@ -391,7 +391,12 @@ class AnimMenu {
 
 
          //------ category : part types
+
+         this.partsTypeMenu = new SelectMiniMenu(this.main.projectObj.partTypes,"part type","Parts Type Menu");
+         this.partsTypeMenu.addToDiv(this.categoryPartTypeDiv);
          newDiv.appendChild(this.categoryPartTypeDiv);
+
+         /*
          const partTypeHeader = document.createElement("h5");
          partTypeHeader.innerText = "Part Types";
          this.categoryPartTypeDiv.appendChild(partTypeHeader);
@@ -450,13 +455,14 @@ class AnimMenu {
          const deleteAnchorsButton = document.createElement("button");
          deleteAnchorsButton.innerText = "delete"; 
          this.categoryPartTypeDiv.appendChild(deleteAnchorsButton);
-         
+         */
 
      }
  
 }
 
-
+/// initialize side-menu function
+ 
 ///functional functions
 
 const addDropDownChoice = (dropdown:HTMLSelectElement,name:string,value:string) => {
@@ -514,35 +520,104 @@ const createPartType = (partTypeList:Array<object>,select:HTMLSelectElement) => 
 
 ////web element group classes
 
+
 export class SelectMiniMenu {
 
   listSelect:HTMLSelectElement = document.createElement("select");
   createNewButton:HTMLButtonElement = document.createElement("button");
   renameButton:HTMLButtonElement = document.createElement("button");
   deleteButton:HTMLButtonElement = document.createElement("button");
+  titleHeader:HTMLHeadingElement = document.createElement("h6");
 
-  constructor(public mainArray:Array<any>,public categoryName:string){
+  createNewFunction:null|CallableFunction = null;
+  onChangeFunction:null|CallableFunction = null;
+  renameFunction:null|CallableFunction = null;
+  deleteFunction:null|CallableFunction = null;
+
+  optionsArray:Array<HTMLOptionElement> = [];
+
+  constructor(public mainArray:Array<any>,public categoryName:string,title:string=""){
+    this.titleHeader.innerText = title;
       this.createNewButton.innerText = "new " + categoryName; 
+      this.renameButton.innerText = "rename";
+      this.deleteButton.innerText = "delete"; 
+      this.deleteButton.disabled = true;
 
       this.listSelect.onchange = () => {
-         
+         if (this.onChangeFunction != null)
+         {
+           this.onChangeFunction();
+         }
       }
 
+
       this.createNewButton.onclick = () => {
-         
+
+        const nameString = prompt("new "+categoryName+" name?");
+        
+        if (nameString != null)
+        {
+          this.addOption(nameString);
+          this.deleteButton.disabled = false;
+          if (this.createNewFunction != null)
+          {
+            this.createNewFunction(nameString);
+          } 
+        }
+        
       }
 
       this.renameButton.onclick = () => {
-         
+        const index = this.listSelect.selectedIndex;
+        const option = this.optionsArray[index];
+        const oldName = option.innerText;
+        const renameString = prompt("rename "+oldName+"to what?");
+
+        if (renameString != null)
+        { 
+          option.innerText = renameString;
+          if (this.renameFunction != null)
+            {
+              
+            }
+        }
       }
       
       this.deleteButton.onclick = () => {
-         
+         if (this.optionsArray.length > 0)
+         {
+            const confirm = window.confirm();
+            if (confirm)
+            {
+              this.removeOption(this.listSelect.selectedIndex);
+            }
+
+         }
       }
+
+  }
+
+
+  addOption = (optionName:string) => {
+    const newOption = document.createElement("option");
+    newOption.innerText = optionName;
+    this.optionsArray.push(newOption);
+    this.listSelect.appendChild(newOption);
+  }
+
+  removeOption = (optionIndex:number) => {
+    const optionElem = this.optionsArray[optionIndex]; 
+    this.listSelect.removeChild(optionElem);
+    this.optionsArray.splice(optionIndex,1);
+ 
   }
 
 
   addToDiv = (div:HTMLDivElement) => {
+    if (this.titleHeader.innerText != "")
+    {
+      div.appendChild(this.titleHeader);  
+    }
     div.appendChild(this.listSelect); 
     div.appendChild(this.createNewButton);
     div.appendChild(this.renameButton);
